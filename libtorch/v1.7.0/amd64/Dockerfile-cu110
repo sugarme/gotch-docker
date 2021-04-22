@@ -1,0 +1,26 @@
+FROM nvidia/cuda:11.2.0-cudnn8-devel-ubuntu18.04
+
+# Install dependencies
+# ====================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  ca-certificates \
+  cmake \
+  wget \
+  unzip
+
+# Install Libtorch-1.7.0-cu11.0
+#==============================
+WORKDIR /
+RUN wget -q --show-progress --progress=bar:force:noscroll -O libtorch.zip https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.0%2Bcu110.zip \
+    && unzip libtorch.zip -d usr/local/lib \
+    && rm libtorch.zip
+
+RUN ldconfig
+
+ENV GOTCH_LIBTORCH="/usr/local/lib/libtorch"
+ENV LIBTORCH="/usr/local/lib/libtorch"
+ENV LIBRARY_PATH="$GOTCH_LIBTORCH/lib"
+ENV CPATH="$GOTCH_LIBTORCH/lib:$GOTCH_LIBTORCH/include:$GOTCH_LIBTORCH/include/torch/csrc/api/include"
+ENV LD_LIBRARY_PATH="$GOTCH_LIBTORCH/lib:/usr/local/cuda-11.2/compat:/usr/local/cuda-11.2/lib64:/usr/lib"
+

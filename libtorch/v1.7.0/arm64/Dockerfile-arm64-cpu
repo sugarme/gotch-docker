@@ -1,0 +1,19 @@
+FROM arm64v8/debian:buster-slim
+
+COPY qemu-aarch64-static /usr/bin/qemu-aarch64-static
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libopenmpi3:arm64 \
+    libgomp1
+
+COPY src/libtorch /usr/local/lib/libtorch/
+
+RUN ldconfig
+
+ENV GOTCH_LIBTORCH="/usr/local/lib/libtorch"
+ENV LIBTORCH="/usr/local/lib/libtorch"
+ENV LIBRARY_PATH="$GOTCH_LIBTORCH/lib"
+ENV CPATH="$GOTCH_LIBTORCH/lib:$GOTCH_LIBTORCH/include:$GOTCH_LIBTORCH/include/torch/csrc/api/include"
+ENV LD_LIBRARY_PATH="$GOTCH_LIBTORCH/lib"
+
+
